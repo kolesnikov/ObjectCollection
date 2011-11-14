@@ -68,8 +68,26 @@ Class ObjectsCollection
             }
         };
         
-        $this->map($callback);
+        return $this->map($callback);
     }
+	
+	
+	/**
+	 *
+	 * @param type $name
+	 * @param type $arguments
+	 * @return type 
+	 */
+	function __call($name, $arguments)
+	{
+		if (method_exists($this, $name)) call_user_func_array ($this->$name, $arguments);
+		
+		$callback	= function($object) use ($name, $arguments){
+			return call_user_func_array($object->$name, $arguments);
+		};
+		
+		$this->map($callback);
+	}
     
     
 	/**
