@@ -24,6 +24,12 @@ Class ObjectsCollection
 		}
 	}
     
+	
+	/**
+	 *
+	 * @param type $name
+	 * @return type 
+	 */
     function __get($name)
     {
         if (isset($this->$name)) return $this->$name;
@@ -42,6 +48,12 @@ Class ObjectsCollection
     }
     
     
+	/**
+	 *
+	 * @param type $name
+	 * @param type $value
+	 * @return type 
+	 */
     function __set($name, $value)
     {
         if (isset($this->$name)) return $this->$name = $value;
