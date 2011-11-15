@@ -1,16 +1,45 @@
 <?php
+/**
+ * Copyright (c) 2011 Eugene Kolesnikov
+ * 
+ * @author Eugene Kolesnikov
+ * @version 0.0.1
+ * 
+ */
+
 
 /**
  * Коллекция транзакций
  */
 Class ObjectsCollection
 {
-	
 	protected $__storage = array();
-    
+	
+	private $classVars;
+	private $classMethods;
+	
     private $errors = NULL;
     private $lastError = NULL;
 
+
+	/**
+	 *
+	 * @param string $className 
+	 */
+	function __construct($className)
+	{
+		if (class_exists($className))
+		{
+			$this->classVars	= get_class_vars($className);
+			$this->classMethods	= get_class_methods($className);
+		}
+		else
+		{
+			throw new Exception('The "'.$className.'" is not class');
+		}
+	}
+	
+	
     /**
 	 * Добавляет транзакцию в коллекцию
 	 * 
@@ -33,16 +62,11 @@ Class ObjectsCollection
     function __get($name)
     {
         if (isset($this->$name)) return $this->$name;
-        
-        $callback	= function($object) use ($name)
-        {
-            if (isset ($object->$name)) {
-                return $object->$name;
-            }
-            else {
-                return new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $name));
-            }
-        };
+			
+		if (!array_key_exists($name, $this->classVars))
+			throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $name));
+		
+        $callback	= function($object) use ($name) { return $object->$name; };
         
         return $this->map($callback);
     }
@@ -58,15 +82,10 @@ Class ObjectsCollection
     {
         if (isset($this->$name)) return $this->$name = $value;
         
-        $callback	= function($object) use ($name, $value)
-        {
-            if (isset ($object->$name)) {
-                $object->$name = $value;
-            }
-            else {
-                return new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $name));
-            }
-        };
+		if (!array_key_exists($name, $this->classVars))
+			throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $name));
+		
+        $callback	= function($object) use ($name, $value) { $object->$name = $value; };
         
         return $this->map($callback);
     }
@@ -82,11 +101,14 @@ Class ObjectsCollection
 	{
 		if (method_exists($this, $name)) call_user_func_array ($this->$name, $arguments);
 		
+		if (!in_array($name, $this->classMethods))
+			throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $name));
+		
 		$callback	= function($object) use ($name, $arguments){
-			return call_user_func_array($object->$name, $arguments);
+			return call_user_func_array(array($object, $name), $arguments);
 		};
 		
-		$this->map($callback);
+		return $this->map($callback);
 	}
     
     
