@@ -18,8 +18,8 @@ Class ObjectsCollection
 	private $classVars;
 	private $classMethods;
 	
-    private $errors = NULL;
-    private $lastError = NULL;
+	private $errors = NULL;
+	private $lastError = NULL;
 
 
 	/**
@@ -102,7 +102,7 @@ Class ObjectsCollection
 		if (method_exists($this, $name)) call_user_func_array ($this->$name, $arguments);
 		
 		if (!in_array($name, $this->classMethods))
-			throw new InvalidArgumentException(sprintf('Identifier "%s" is not defined.', $name));
+			throw new InvalidArgumentException(sprintf('Class "%s" is not defined.', $name));
 		
 		$callback	= function($object) use ($name, $arguments){
 			return call_user_func_array(array($object, $name), $arguments);
