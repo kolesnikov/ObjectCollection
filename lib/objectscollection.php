@@ -20,7 +20,8 @@ Class ObjectsCollection
 	
 	private $errors = NULL;
 	private $lastError = NULL;
-
+	
+	private $objectClassName;
 
 	/**
 	 *
@@ -28,6 +29,8 @@ Class ObjectsCollection
 	 */
 	function __construct($className)
 	{
+		$this->objectClassName	= $className;
+		
 		if (class_exists($className))
 		{
 			$this->classVars	= get_class_vars($className);
@@ -35,7 +38,7 @@ Class ObjectsCollection
 		}
 		else
 		{
-			throw new Exception('The "'.$className.'" is not class');
+			throw new InvalidArgumentException('The "'.$className.'" is not class');
 		}
 	}
 	
@@ -49,7 +52,18 @@ Class ObjectsCollection
 	{
 		if (is_object($object))
 		{
-			$this->__storage[spl_object_hash($object)] = $object;
+			if (get_class($object) == $this->objectClassName)
+			{
+				$this->__storage[spl_object_hash($object)] = $object;
+			}
+			else
+			{
+				throw new InvalidArgumentException(sprintf('Object #%s is not instance of #%s', get_class($object), $this->objectClassName));
+			}
+		}
+		else
+		{
+			throw new InvalidArgumentException(sprintf('Variable is not object'));
 		}
 	}
     
