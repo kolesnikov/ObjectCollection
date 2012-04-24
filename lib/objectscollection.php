@@ -119,19 +119,19 @@ Class ObjectsCollection
 	 */
 	private function map(Closure $callback)
 	{
-        $this->errors   = $this->lastError  = NULL;
+		$this->errors   = $this->lastError  = NULL;
 
-        $result = array_map($callback, $this->__storage);
-        
-        foreach ($result as $item)
-            if ($item instanceof Exception) $this->errors[]    = $item;
-            
-        if (is_array($this->errors))
-        {
-            $this->lastError    = end($this->errors);
-            throw new Exception('Ошибка выполнения коллекции');
-        }
-        
-        return $result;
+		$result = array_map($callback, $this->__storage);
+
+		foreach ($result as $item)
+			if ($item instanceof Exception) $this->errors[]    = $item;
+
+		if (is_array($this->errors))
+		{
+			$this->lastError    = end($this->errors);
+			throw new Exception('Ошибка выполнения коллекции');
+		}
+
+		return $result;
 	}
 }
