@@ -40,7 +40,7 @@ Class ObjectsCollection
 	}
 	
 	
-    /**
+	/**
 	 * Добавляет транзакцию в коллекцию
 	 * 
 	 * @param Transaction $transaction Объект транзакции
